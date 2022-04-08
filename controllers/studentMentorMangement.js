@@ -175,3 +175,66 @@ export const assignStudentToMentor = async (req, res) => {
     return res.status(400).send("Error assigining student to mentor");
   }
 };
+
+//change mentor for a student
+export const changeMentor = async (req, res) => {
+  const studentId = req.params.studentId;
+  const mentorId = req.body.mentorAssigned;
+  const { mentorAssigned } = await Student.findById(req.params.studentId);
+  const currentMentorId = mentorAssigned.toString();
+
+  console.log("STUDENT_ID ===>", studentId);
+  console.log("MENTOR_ID ===>", mentorId);
+  console.log("CURRENT_MENTOR_ID ===>", currentMentorId);
+
+  if (currentMentorId === mentorId) {
+    return res.status(200).json("Assigned mentor is same for this student");
+  } else {
+    // updating student db
+    let student = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: { mentorAssigned: mentorId } },
+      { new: true }
+    ).exec();
+
+    //updating mentor db
+    const { studentsAssigned } = await Mentor.findById(mentorId);
+    let studentsArray = studentsAssigned;
+    studentsArray.push(studentId);
+    await Mentor.findByIdAndUpdate(
+      mentorId,
+      { $set: { studentsAssigned: studentsArray } },
+      { new: true }
+    ).exec();
+
+    //updating current mentor db
+    const id = await Mentor.findById(currentMentorId);
+    let currentMentorsStudentArray = id.studentsAssigned;
+    let index = currentMentorsStudentArray.indexOf(studentId);
+    currentMentorsStudentArray.splice(index, 1);
+    await Mentor.findByIdAndUpdate(
+      currentMentorId,
+      {
+        $set: { studentsAssigned: currentMentorsStudentArray },
+      },
+      { new: true }
+    ).exec();
+    res.status(200).json(student);
+  }
+};
+
+//getting students for a mentor
+export const mentorStudents = async (req, res) => {
+  const mentorId = req.params.mentorId;
+  const { studentsAssigned } = await Mentor.findById(mentorId).exec();
+  // console.log(studentsAssigned);
+  let studentNames = [];
+  studentsAssigned.forEach(async (s) => {
+    const { name } = await Student.findById(s).exec();
+    studentNames.push(name);
+    // console.log(studentNames);
+  });
+  setTimeout(() => {
+    res.status(200).json(studentNames);
+  }, 1000);
+};
