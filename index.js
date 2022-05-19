@@ -15,7 +15,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("Database connected"))
-  .catch((err) => console.log("Error in connecting Database", error));
+  .catch((err) => console.log("Error in connecting Database", err));
 
 //middlewares
 app.use(cors());

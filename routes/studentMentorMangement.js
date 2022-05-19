@@ -7,7 +7,9 @@ import {
   unassignedStudents,
   assignStudentToMentor,
   changeMentor,
-  mentorStudents
+  mentorStudents,
+  deleteStudent,
+  deletementor,
 } from "../controllers/studentMentorMangement.js";
 
 const router = Router();
@@ -19,6 +21,8 @@ router.get("/get-mentors-info", mentorInfo);
 router.get("/get-unassigned-students", unassignedStudents);
 router.put("/assign-student-to-mentor/:mentorId", assignStudentToMentor);
 router.put("/change-mentor/:studentId", changeMentor);
-router.get("/mentor-students/:mentorId", mentorStudents)
+router.get("/mentor-students/:mentorId", mentorStudents);
+router.delete("/delete-student/:studentId", deleteStudent);
+router.delete("/delete-mentor/:mentorId", deletementor);
 
 export default router;

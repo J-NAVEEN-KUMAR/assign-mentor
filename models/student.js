@@ -25,8 +25,8 @@ const studentSchema = Schema(
       trim: true,
     },
     mentorAssigned: {
-      type: ObjectId,
-      ref: "Mentor",
+      type: String,
+      trim: true,
     },
   },
   { timestamps: true }
